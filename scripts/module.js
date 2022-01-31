@@ -1,7 +1,7 @@
-const ModuleName = "curved-text"
+const ModuleName = "text-tool-set"
 Hooks.once('init', async function () {
-    libWrapper.register('curved-text', 'Drawing.prototype._createText', newText, 'OVERRIDE')
-    libWrapper.register('curved-text', 'Drawing.prototype.refresh', refresh, 'OVERRIDE')
+    libWrapper.register(ModuleName, 'Drawing.prototype._createText', newText, 'OVERRIDE')
+    libWrapper.register(ModuleName, 'Drawing.prototype.refresh', refresh, 'OVERRIDE')
     game.settings.register(ModuleName, "presets", {
         scope: "world",
         config: false,
@@ -31,21 +31,21 @@ Hooks.on('renderDrawingConfig', (data, html, options) => {
     let currentPreset = data.object.data.flags[ModuleName]?.preset
     let content = `
     <div class="form-group">
-                    <label>Is Curved Text</label>
+                    <label>${game.i18n.localize("TITS.curvedText")}</label>
                     <input id="curved" name="flags.${ModuleName}.curved" type="checkbox" ${data.object.data.flags[ModuleName]?.curved ? 'checked' : ''}></input>
                 </div>
                 <div class="form-group">
-                <label>Curve Arc</label>
+                <label>${game.i18n.localize("TITS.curveArc")}</label>
                 <input id="arc" name="flags.${ModuleName}.arc" type="Number" value="${data.object.data.flags[ModuleName]?.arc}"></input>
             </div>
     `
-    let presets = `<option selected value="none"> None</option>`
+    let presets = `<option selected value="none">${game.i18n.localize("TITS.none")}</option>`
     for (const [index, element] of CONFIG.textPresets.entries()) {
         presets += `<option value="${element.name}" ${currentPreset === element.name ? "selected" : ""}>${element.name}</option>`;
     }
     let presetSelector = `
     <div class="form-group">
-                    <label>Text Preset</label>
+                    <label>${game.i18n.localize("TITS.textPreset")}</label>
                     <select id="preset" name="flags.${ModuleName}.preset">
                     ${presets}
                     </select>
@@ -222,8 +222,8 @@ function getSceneControlButtons(buttons) {
 
     if (tokenButton) {
         tokenButton.tools.push({
-            name: "curved-text-config",
-            title: "Curved Text",
+            name: "tits-config",
+            title: game.i18n.localize("TITS.toolButton"),
             icon: "fas fa-text-width",
             visible: game.user.isGM,
             onClick: () => styleEditor.UpdatePresets(),
@@ -237,11 +237,11 @@ class styleEditor {
         let presets = await game.settings.get(ModuleName, "presets")
         let content = `<div><select name="presets">${presets?.reduce((acc, preset) => acc += `<option value = ${preset.id}>${preset.name}</option>`, '')}</select></div>`
         let presetSelector = new Dialog({
-            title: "Preset Selector",
-            content: `<div class="form group"><label> Presets: </label>${content}</div>`,
+            title: `${game.i18n.localize("TITS.presetTitle")}`,
+            content: `<div class="form group"><label>${game.i18n.localize("TITS.presets")}: </label>${content}</div>`,
             buttons: {
                 one: {
-                    label: "Update",
+                    label: `${game.i18n.localize("TITS.update")}`,
                     icon: `<i class="fas fa-edit"></i>`,
                     callback: (html) => {
                         let updatePreset = html.find("[name=presets]")[0].value;
@@ -250,7 +250,7 @@ class styleEditor {
                     }
                 },
                 two: {
-                    label: "Create Copy",
+                    label: `${game.i18n.localize("TITS.createCopy")}`,
                     icon: `<i class="fas fa-copy"></i>`,
                     callback: (html) => {
                         let updatePreset = html.find("[name=presets]")[0].value;
@@ -259,7 +259,7 @@ class styleEditor {
                     }
                 },
                 three: {
-                    label: "Delete",
+                    label: `${game.i18n.localize("TITS.delete")}`,
                     icon: `<i class="fas fa-trash-alt"></i>`,
                     callback: (html) => {
                         let updatePreset = html.find("[name=presets]")[0].value;
@@ -267,18 +267,18 @@ class styleEditor {
                         let index = presets.indexOf(preset)
                         let alteredPresets = presets.splice(index, 1)
                         new Dialog({
-                            title: "Conformation",
-                            content: `Are you sure you want to remove this preset`,
+                            title: `${game.i18n.localize("TITS.conformation")}`,
+                            content: `${game.i18n.localize("TITS.confirmText")}`,
                             buttons: {
                                 one: {
-                                    label: "Confirm",
+                                    label: `${game.i18n.localize("TITS.confirm")}`,
                                     icon: `<i class="fas fa-check"></i>`,
                                     callback: () => {
                                         game.settings.set(ModuleName, "presets", presets)
                                     }
                                 },
                                 two: {
-                                    label: "Return",
+                                    label: `${game.i18n.localize("TITS.return")}`,
                                     icon: `<i class="fas fa-undo-alt"></i>`,
                                     callback: presetSelector
                                 }
@@ -287,7 +287,7 @@ class styleEditor {
                     }
                 },
                 four: {
-                    label: "Add New",
+                    label: `${game.i18n.localize("TITS.new")}`,
                     icon: `<i class="fas fa-plus"></i>`,
                     callback: () => {
 
@@ -304,7 +304,7 @@ class styleEditor {
         if(copy) id = randomID()
         let { align, fontFamily, fontSize, fontStyle, fontVariant, fontWeight, strokeThickness, fill, fillGradientType, fillGradientStops, dropShadow, dropShadowAlpha, dropShadowAngle, dropShadowBlur, dropShadowColor, dropShadowDistance, wordWrap, wordWrapWidth, leading, letterSpacing } = preset?.style ? preset.style : 0
         switch (copy) {
-            case true: name = `${name} (copy)`;
+            case true: name = `${name} (${game.i18n.localize("TITS.copy")})`;
                 break;
             case false: name = name;
                 break;
@@ -312,7 +312,7 @@ class styleEditor {
         }
         if(typeof fill !== "object") fill = [0,0]
 
-        let fontFamilyTypes = `<option selected value="none"> None</option>`
+        let fontFamilyTypes = `<option selected value="none">${game.i18n.localize("TITS.none")}</option>`
         for (const k of Object.values(CONFIG.fontFamilies)) {
             fontFamilyTypes += `<option value="${k}" ${fontFamily === k ? "selected" : ""}>${k}</option>`;
         }
@@ -320,23 +320,23 @@ class styleEditor {
         let dialogContent = `
         <form>
             <div class="form-group">
-                <label>Preset Name</label>
+                <label>${game.i18n.localize("TITS.presetName")}</label>
                 <input id="name" name="${id}" type="text" value="${name}"></input>
             </div>
 
             <div class="form-group">
-                <label>Align</label>
+                <label>${game.i18n.localize("TITS.align")}</label>
                 <div class="form-fields">
                     <select id="align" name="align">
-                        <option value="left" ${align === "normal" ? "checked" : ""}>Left</option>
-                        <option value="center" ${align === "center" ? "checked" : ""}>Center</option>
-                        <option value="right" ${align === "right" ? "checked" : ""}>Right</option>
+                        <option value="left" ${align === "normal" ? "checked" : ""}>${game.i18n.localize("TITS.left")}</option>
+                        <option value="center" ${align === "center" ? "checked" : ""}>${game.i18n.localize("TITS.center")}</option>
+                        <option value="right" ${align === "right" ? "checked" : ""}>${game.i18n.localize("TITS.right")}</option>
                     </select>
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Font Family</label>
+                <label>${game.i18n.localize("TITS.fontFamily")}</label>
                 <div class="form-fields">
                 <select id="fontFamily" name="fontFamily">
                     ${fontFamilyTypes}
@@ -345,72 +345,65 @@ class styleEditor {
             </div>
 
             <div class="form-group">
-                <label>Font Size</label>
+                <label>${game.i18n.localize("TITS.fontSize")}</label>
                 <div class="form-fields">
                     <input id="fontSize" name="fontSize" type="Number" min="0" value="${fontSize ?? 80}"></input>
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Font Style</label>
+                <label>${game.i18n.localize("TITS.fontStyle")}</label>
                 <div class="form-fields">
                     <select id="fontStyle" name="fontStyle">
-                        <option value="normal" ${fontStyle === "normal" ? "selected" : ""}>Normal</option>
-                        <option value="italic" ${fontStyle === "italic" ? "selected" : ""}>Italic</option>
-                        <option value="oblique" ${fontStyle === "oblique" ? "selected" : ""}>Oblique</option>
+                        <option value="normal" ${fontStyle === "normal" ? "selected" : ""}>${game.i18n.localize("TITS.normal")}</option>
+                        <option value="italic" ${fontStyle === "italic" ? "selected" : ""}>${game.i18n.localize("TITS.italic")}</option>
+                        <option value="oblique" ${fontStyle === "oblique" ? "selected" : ""}>${game.i18n.localize("TITS.oblique")}</option>
                     </select>
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Small Caps</label>
-                <div class="form-fields">
-                    <input type="checkbox" id="fontVariant" name="fontVariant" ${fontVariant ? "checked" : ""} >
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Font Weight</label>
+                <label>${game.i18n.localize("TITS.fontWeight")}</label>
                 <div class="form-fields">
                     <select id="fontWeight" name="fontWeight">
-                        <option value="normal" ${fontWeight === "normal" ? "selected" : ""}>Normal</option>
-                        <option value="bold" ${fontWeight === "bold" ? "checked" : ""}>Bold</option>
-                        <option value="bolder" ${fontWeight === "bolder" ? "selected" : ""}>Bolder</option>
-                        <option value="lighter" ${fontWeight === "lighter" ? "selected" : ""}>Lighter</option>
+                        <option value="normal" ${fontWeight === "normal" ? "selected" : ""}>${game.i18n.localize("TITS.normal")}</option>
+                        <option value="bold" ${fontWeight === "bold" ? "checked" : ""}>${game.i18n.localize("TITS.bold")}</option>
+                        <option value="bolder" ${fontWeight === "bolder" ? "selected" : ""}>${game.i18n.localize("TITS.bolder")}</option>
+                        <option value="lighter" ${fontWeight === "lighter" ? "selected" : ""}>${game.i18n.localize("TITS.lighter")}</option>
                     </select>
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Stoke Thickness</label>
+                <label>${game.i18n.localize("TITS.strokeThickness")}</label>
                 <div class="form-fields">
                     <input id="strokeThickness" name="strokeThickness" type="Number" min="0" value="${strokeThickness ?? 8}"></input>
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Font Color</label>
+                <label>${game.i18n.localize("TITS.fontColor")}</label>
                 <input type="color" id="fill" name="fill" value="${fill[0] || ""}">
             </div>
 
             <div class="form-group">
-                <label>Secondary Font Color</label>
+                <label>${game.i18n.localize("TITS.secondFontColor")}</label>
                 <input type="color" id="secondaryFill" name="secondaryFill" value="${fill[1] || ""}">
             </div>
 
             <div class="form-group">
-                <label>Use 2 colors</label>
+                <label>${game.i18n.localize("TITS.2colors")}</label>
                 <div class="form-fields">
                     <input type="checkbox" id="duelColor" name="duelColor" ${duelColor ? "checked" : ""} >
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Color Gradient</label>
+                <label>${game.i18n.localize("TITS.gradient")}</label>
                 <div class="form-fields">
                     <select id="fillGradientType" name="fillGradientType">
-                        <option value="LINEAR_HORIZONTAL" ${fillGradientType === "LINEAR_HORIZONTAL" ? "selected" : ""}>Horizontal</option>
-                        <option value="LINEAR_VERTICAL" ${fillGradientType === "LINEAR_VERTICAL" ? "selected" : ""}>Vertical</option>
+                        <option value="LINEAR_HORIZONTAL" ${fillGradientType === "LINEAR_HORIZONTAL" ? "selected" : ""}>${game.i18n.localize("TITS.horizontal")}</option>
+                        <option value="LINEAR_VERTICAL" ${fillGradientType === "LINEAR_VERTICAL" ? "selected" : ""}>${game.i18n.localize("TITS.vertical")}</option>
                     </select>
                 </div>
             </div>
@@ -418,81 +411,81 @@ class styleEditor {
             
 
             <div class="form-group">
-                <label>Gradient Alignment</label>
+                <label>${game.i18n.localize("TITS.alignment")}</label>
                 <div class="form-fields">
                     <input id="fillGradientStops" name="fillGradientStops" type="range" min="0" max="1" step="0.1" value="${fillGradientStops ?? 0.5}"></input>
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Drop Shadow</label>
+                <label>${game.i18n.localize("TITS.shadow")}</label>
                 <div class="form-fields">
                     <input type="checkbox" id="dropShadow" name="dropShadow" ${dropShadow ? "checked" : ""} >
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Shadow Alpha</label>
+                <label>${game.i18n.localize("TITS.shadowAlpha")}</label>
                 <div class="form-fields">
                     <input id="dropShadowAlpha" name="dropShadowAlpha" type="range" min="0" max="1" step="0.05" value="${dropShadowAlpha ?? 1}"></input>
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Shadow Blur</label>
+                <label>${game.i18n.localize("TITS.shadowBlur")}</label>
                 <div class="form-fields">
                     <input id="dropShadowBlur" name="dropShadowBlur" type="Number"  value="${dropShadowBlur ?? 0}"></input>
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Shadow Angle</label>
+                <label>${game.i18n.localize("TITS.shadowAngle")}</label>
                 <div class="form-fields">
                     <input id="dropShadowAngle" name="dropShadowAngle" type="Number" value="${dropShadowAngle ?? Math.PI / 6}"></input>
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Shadow Color</label>
+                <label>${game.i18n.localize("TITS.shadowColor")}</label>
                 <input type="color" id="dropShadowColor" name="dropShadowColor" value="${dropShadowColor ?? "#000000"}"></input>
             </div>
 
             <div class="form-group">
-                <label>Shadow Distance</label>
+                <label>${game.i18n.localize("TITS.shadowDistance")}</label>
                 <div class="form-fields">
                     <input id="dropShadowDistance" name="dropShadowDistance" type="Number" value="${dropShadowDistance ?? 0}"></input>
                 </div>
             </div>
             <div class="form-group">
-                <label>Word Wrap</label>
+                <label>${game.i18n.localize("TITS.wordwrap")}</label>
                 <div class="form-fields">
                     <input type="checkbox" id="wordWrap" name="wordWrap" ${wordWrap ? "checked" : ""} >
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Smart Auto Wrap</label>
+                <label>${game.i18n.localize("TITS.smartWrap")}</label>
                 <div class="form-fields">
                     <input type="checkbox" id="autoWrap" name="autoWrap" ${autoWrap ? "checked" : ""} >
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Word Wrap Distance</label>
+                <label>${game.i18n.localize("TITS.wrapDistance")}</label>
                 <div class="form-fields">
                     <input id="wordWrapWidth" name="wordWrapWidth" type="Number" value="${wordWrapWidth ?? 1000}"></input>
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Line Spacing</label>
+                <label>${game.i18n.localize("TITS.lineSpace")}</label>
                 <div class="form-fields">
                     <input id="leading" name="leading" type="Number" value="${leading ?? 0}"></input>
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Letter Spacing</label>
+                <label>${game.i18n.localize("TITS.letterSpace")}</label>
                 <div class="form-fields">
                     <input id="letterSpacing" name="letterSpacing" type="Number" value="${letterSpacing ?? 0}"></input>
                 </div>
@@ -502,11 +495,11 @@ class styleEditor {
             `
 
         new Dialog({
-            title: "Curved Text Presets",
+            title: `${game.i18n.localize("TITS.textPresetsTitle")}`,
             content: dialogContent,
             buttons: {
                 one: {
-                    label: "Add Preset",
+                    label: `${game.i18n.localize("TITS.addPreset")}`,
                     icon: `<i class="fas fa-check"></i>`,
                     callback: async (html) => {
                         let id = html.find("#name")[0].name ?? randomID()
@@ -515,7 +508,7 @@ class styleEditor {
                         let fontFamily = html.find("#fontFamily")[0].value
                         let fontSize = parseFloat(html.find("#fontSize")[0].value)
                         let fontStyle = html.find("#fontStyle")[0].value
-                        let fontVariant = html.find("#fontVariant")[0].value
+                        //let fontVariant = html.find("#fontVariant")[0].value
                         let fontWeight = html.find("#fontWeight")[0].value
                         let strokeThickness = parseFloat(html.find("#strokeThickness")[0].value)
                         let fill = html.find("#fill")[0].value
@@ -590,10 +583,10 @@ class styleEditor {
             }
             presets.push(object)
             new Dialog({
-                content: `${object.name} is already a preset, confirm overwrite`,
+                content: `${game.i18n.format("overwriteMessage", {name: object.name})}`,
                 buttons: {
                     one: {
-                        label: "OK",
+                        label: `${game.i18n.localize("TITS.ok")}`,
                         callback: async () => {
                             await game.settings.set(ModuleName, "presets", presets)
                             applyConfig()
@@ -601,7 +594,7 @@ class styleEditor {
                         }
                     },
                     two: {
-                        label: "Return"
+                        label: `${game.i18n.localize("TITS.return")}`
                     }
                 }
             }).render(true)
@@ -616,46 +609,22 @@ class styleEditor {
 
     static async RemovePreset(name) {
         if (!name) {
-            ui.notifications.error("Please provide a name for the preset")
+            ui.notifications.error(`${game.i18n.localize("TITS.presetError1")}`)
             return;
         }
         let presets = game.settings.get(ModuleName, "presets");
         let removePreset = presets.find(i => i.name === name)
         if (!removePreset) {
-            ui.notifications.error("No preset with that name exists")
+            ui.notifications.error(`${game.i18n.localize("TITS.presetError2")}`)
             return;
         }
         let index = presets.indexOf(removePreset)
         if (index > -1) {
             presets.splice(index, 1)
-            ui.notifications.notify(`${removePreset.name} was removed from the presets`)
+            ui.notifications.notify(`${game.i18n.format("TITS.removeMessage",{removePreset : removePreset.name} )}`)
         }
         await game.settings.set(ModuleName, "presets", presets)
         applyConfig()
         updateDrawings()
     }
 }
-
-/**
- * align
- * dropshadow---
- * dropdropShadowAlpha---
- * dropdropShadowAngle---
- * dropdropShadowBlur---
- * dropdropShadowColor---
- * dropShadowDistance---
- * fill---
- * fillGradientType---
- * gillGradientStops---
- * fontFamily---
- * fontSize--
- * fontStyle---
- * fontVariant---
- * fontWeight--
- * leading---
- * letterSpacing---
- * stroke---
- * strokeThickness---
- * wordWrap--
- * wordWrapWidth--
- */

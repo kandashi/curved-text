@@ -1,7 +1,7 @@
 {
-  "name": "curved-text",
-  "title": "Curved Text",
-  "description": "",
+  "name": "text-tool-set",
+  "title": "Text Improvement Tool Set",
+  "description": "Allows for more advanced text configuration presets",
   "version": "This is auto replaced",
   "library": "false",
   "manifestPlusVersion": "1.0.0",
@@ -9,25 +9,13 @@
   "compatibleCoreVersion": "9",
   "authors": [
     {
-      "name": "The League of Extraordinary FVTT Developers",
-      "url": "https://github.com/League-of-Foundry-Developers",
-      "discord": "discordID#0001"
+      "name": "Kandashis",
+      "url": "https://github.com/kandashi",
+      "discord": "Kandashi (He/Him)#6698"
     }
-  ],
-  "dependencies": [
-
-  ],
-  "conflicts": [
-    
   ],
   "esmodules": [
     "/scripts/module.js"
-  ],
-  "scripts": [
-    "/scripts/lib/lib.js"
-  ],
-  "styles": [
-    "/styles/module.css"
   ],
   "languages": [
     {

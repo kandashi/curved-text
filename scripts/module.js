@@ -254,7 +254,7 @@ class styleEditor {
                     icon: `<i class="fas fa-copy"></i>`,
                     callback: (html) => {
                         let updatePreset = html.find("[name=presets]")[0].value;
-                        let preset = presets.find(p => p.name === updatePreset)
+                        let preset = presets.find(p => p.id === updatePreset)
                         styleEditor.GeneratePreset(preset, true)
                     }
                 },
@@ -263,7 +263,7 @@ class styleEditor {
                     icon: `<i class="fas fa-trash-alt"></i>`,
                     callback: (html) => {
                         let updatePreset = html.find("[name=presets]")[0].value;
-                        let preset = presets.find(p => p.name === updatePreset)
+                        let preset = presets.find(p => p.id === updatePreset)
                         let index = presets.indexOf(preset)
                         let alteredPresets = presets.splice(index, 1)
                         new Dialog({

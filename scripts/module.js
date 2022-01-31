@@ -108,6 +108,7 @@ function newText() {
     // Create the text container
     let text = new PreciseText(this.data.text, textStyle);
     if (!this.data.flags[ModuleName]?.curved || !this.data.flags[ModuleName]?.arc) return text
+    text.resolution = 20
     const tL = text.width
     const arc = this.data.flags[ModuleName].arc
     const arcFraction = 180 / arc
